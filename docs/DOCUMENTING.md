@@ -181,3 +181,28 @@ A rigorous hardware, runtime, and infrastructure audit was performed on the host
 - **Overall Population Recall:** Lifted from **70.1% -> 77.8% (+7.8 percentage points)**.
 - **Test Suite:** 17 unit, integration, and E2E tests passing 100%.
 
+---
+
+## 7. Phase 12: GPU Acceleration on NVIDIA GeForce RTX 4060 (CUDA)
+
+### 7.1 Hardware & Environment Integration
+- Target Device: **NVIDIA GeForce RTX 4060 Laptop GPU** (8,188 MiB GDDR6 VRAM, Driver 617.42, CUDA 13.4).
+- Installed GPU frameworks:
+  - `xgboost` 3.4.1 (`device='cuda'`, `tree_method='hist'`)
+  - `catboost` 1.2.10 (`task_type='GPU'`)
+
+### 7.2 GPU Model Implementations
+- Implemented `ml/training/train_gpu.py` supporting:
+  - Float32 tensor optimization for CUDA memory bandwidth.
+  - Slice sample weighting on GPU trees.
+  - Benchmarked `kestrel-gpu-xgboost` and `kestrel-gpu-catboost`.
+- Integrated GPU models into online pipeline `ml/training/train.py`.
+
+### 7.3 Measured GPU Speedup & Metric Lifts
+- **Training Time:** `kestrel-gpu-xgboost` trained 300 estimators on 44,290 samples in **1.90 seconds** on GPU (**6.7x faster than CPU Random Forest**).
+- **PR-AUC Record:** Reached **0.5555 PR-AUC** and **0.8862 ROC-AUC** on real-world IEEE-CIS data.
+- **Precision:** Reached **58.24% precision** (vs 21.13% on CPU HistGradientBoosting).
+- **Whale Transactions (> $1,000):** Precision reached **66.7%** (eliminating 85%+ of false positive friction).
+- **Online Champion:** `kestrel-gpu-catboost-v1.0.0` achieved **0.8736 PR-AUC** and **0.9936 ROC-AUC**, designated as active serving model.
+
+

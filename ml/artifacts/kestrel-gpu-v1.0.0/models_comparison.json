@@ -1,0 +1,42 @@
+{
+  "kestrel-gpu-xgboost": {
+    "model_id": "kestrel-gpu-xgboost",
+    "device": "NVIDIA GeForce RTX 4060 Laptop GPU (CUDA)",
+    "train_time_sec": 1.9,
+    "test_pr_auc": 0.5555,
+    "test_roc_auc": 0.8862,
+    "test_precision": 0.5824,
+    "test_recall": 0.501,
+    "test_f1": 0.5386,
+    "confusion_matrix": [
+      [
+        14083,
+        180
+      ],
+      [
+        250,
+        251
+      ]
+    ]
+  },
+  "kestrel-gpu-catboost": {
+    "model_id": "kestrel-gpu-catboost",
+    "device": "NVIDIA GeForce RTX 4060 Laptop GPU (CUDA)",
+    "train_time_sec": 2.99,
+    "test_pr_auc": 0.5352,
+    "test_roc_auc": 0.8811,
+    "test_precision": 0.354,
+    "test_recall": 0.5928,
+    "test_f1": 0.4433,
+    "confusion_matrix": [
+      [
+        13721,
+        542
+      ],
+      [
+        204,
+        297
+      ]
+    ]
+  }
+}

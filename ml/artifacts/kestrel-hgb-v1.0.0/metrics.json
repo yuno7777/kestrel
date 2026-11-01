@@ -1,7 +1,7 @@
 {
   "model_id": "kestrel-hgb-v1.0.0",
   "algorithm": "HistGradientBoostingClassifier",
-  "trained_at": "2026-11-01T22:18:09.191060+00:00",
+  "trained_at": "2026-11-01T23:56:41.898864+00:00",
   "test_roc_auc": 0.991,
   "test_pr_auc": 0.8367,
   "test_precision": 0.463,

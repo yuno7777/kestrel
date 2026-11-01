@@ -1,0 +1,17 @@
+{
+  "model_id": "kestrel-gpu-xgboost",
+  "device": "NVIDIA GeForce RTX 4060 Laptop GPU (CUDA)",
+  "algorithm": "XGBClassifier",
+  "dataset": "IEEE-CIS Real-World Fraud Telemetry (59,054 transactions)",
+  "features_count": 108,
+  "test_roc_auc": 0.8862,
+  "test_pr_auc": 0.5555,
+  "train_time_sec": 1.9,
+  "test_precision": 0.5824,
+  "test_recall": 0.501,
+  "test_f1": 0.5386,
+  "adaptive_test_recall": 0.6766,
+  "adaptive_test_precision": 0.2586,
+  "adaptive_test_f1": 0.3742,
+  "trained_at": "2026-11-01T23:55:02Z"
+}

@@ -20,6 +20,8 @@ from sklearn.metrics import (
     precision_recall_curve,
 )
 from sklearn.model_selection import train_test_split
+import xgboost as xgb
+import catboost as cb
 
 from ml.data.generator import SyntheticTransactionGenerator
 from ml.features.pipeline import KestrelFeaturePipeline, ALL_FEATURE_COLUMNS
@@ -55,6 +57,24 @@ def train_and_evaluate(
 
     # Models to benchmark
     models = {
+        "kestrel-gpu-xgb-v1.0.0": xgb.XGBClassifier(
+            n_estimators=180,
+            max_depth=7,
+            learning_rate=0.08,
+            tree_method="hist",
+            device="cuda",
+            random_state=seed,
+            eval_metric="aucpr",
+        ),
+        "kestrel-gpu-catboost-v1.0.0": cb.CatBoostClassifier(
+            iterations=200,
+            depth=6,
+            learning_rate=0.08,
+            task_type="GPU",
+            random_seed=seed,
+            verbose=0,
+            eval_metric="PRAUC",
+        ),
         "kestrel-hgb-v1.0.0": HistGradientBoostingClassifier(
             class_weight="balanced",
             max_iter=150,

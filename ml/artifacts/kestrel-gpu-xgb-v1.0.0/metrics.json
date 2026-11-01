@@ -1,0 +1,70 @@
+{
+  "model_id": "kestrel-gpu-xgb-v1.0.0",
+  "algorithm": "XGBClassifier",
+  "trained_at": "2026-11-01T23:56:39.948843+00:00",
+  "test_roc_auc": 0.9917,
+  "test_pr_auc": 0.8609,
+  "test_precision": 0.8647,
+  "test_recall": 0.7012,
+  "test_f1": 0.7744,
+  "confusion_matrix": [
+    [
+      6068,
+      18
+    ],
+    [
+      49,
+      115
+    ]
+  ],
+  "threshold_analysis": [
+    {
+      "threshold": 0.2,
+      "precision": 0.7348,
+      "recall": 0.811,
+      "f1": 0.771
+    },
+    {
+      "threshold": 0.3,
+      "precision": 0.7963,
+      "recall": 0.7866,
+      "f1": 0.7914
+    },
+    {
+      "threshold": 0.4,
+      "precision": 0.8243,
+      "recall": 0.7439,
+      "f1": 0.7821
+    },
+    {
+      "threshold": 0.5,
+      "precision": 0.8647,
+      "recall": 0.7012,
+      "f1": 0.7744
+    },
+    {
+      "threshold": 0.6,
+      "precision": 0.874,
+      "recall": 0.6768,
+      "f1": 0.7629
+    },
+    {
+      "threshold": 0.7,
+      "precision": 0.8947,
+      "recall": 0.622,
+      "f1": 0.7338
+    },
+    {
+      "threshold": 0.75,
+      "precision": 0.9167,
+      "recall": 0.6037,
+      "f1": 0.7279
+    },
+    {
+      "threshold": 0.85,
+      "precision": 0.9505,
+      "recall": 0.5854,
+      "f1": 0.7245
+    }
+  ]
+}

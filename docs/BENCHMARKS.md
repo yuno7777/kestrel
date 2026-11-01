@@ -97,3 +97,28 @@ Tested on a 13th Gen Intel Core i7-13620H (10 cores, 16 threads), 16 GB DDR5 RAM
 | **P95 HTTP Turnaround** | 303.45 ms | < 450 ms | PASSED |
 | **P99 HTTP Turnaround** | 329.66 ms | < 500 ms | PASSED |
 | **In-Process Inference Latency** | **2.8 - 4.2 ms** | < 10.0 ms | EXCEEDED |
+
+---
+
+## 6. GPU Training Acceleration & Performance Benchmark
+
+### 6.1 Hardware Configuration
+- **GPU Accelerator:** NVIDIA GeForce RTX 4060 Laptop GPU (8,188 MiB GDDR6 VRAM, Driver 617.42, CUDA 13.4)
+- **Host CPU:** 13th Gen Intel(R) Core(TM) i7-13620H (16 vCPUs)
+- **Frameworks:** XGBoost 3.4.1 (`device='cuda'`, `tree_method='hist'`), CatBoost 1.2.10 (`task_type='GPU'`)
+
+### 6.2 Real-World IEEE-CIS Training Benchmark (44,290 Train Samples, 108 Features)
+
+| Model | Acceleration | Train Time | Test PR-AUC | Test ROC-AUC | Test Precision | Test Recall | Test F1 |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **`kestrel-gpu-xgboost`** | **NVIDIA CUDA** | **1.90 s** | **0.5555** | **0.8862** | **58.24%** | 50.10% | **0.5386** |
+| **`kestrel-gpu-catboost`** | **NVIDIA CUDA** | **2.99 s** | 0.5352 | 0.8811 | 35.40% | 59.28% | 0.4433 |
+| `kestrel-ieee-hgb` | CPU (Multithread) | 4.31 s | 0.5148 | 0.8796 | 21.13% | 70.06% | 0.3247 |
+| `kestrel-ieee-rf` | CPU (Multithread) | 12.80 s | 0.4721 | 0.8654 | 18.50% | 68.20% | 0.2910 |
+| `kestrel-ieee-lr` | CPU (Single) | 8.45 s | 0.2842 | 0.7961 | 11.20% | 63.40% | 0.1904 |
+
+### 6.3 Key GPU Takeaways
+1. **Training Speedup:** GPU XGBoost trained 300 deep trees on 44,290 multi-dimensional records in **1.90 seconds**, delivering a **6.7x speedup over CPU Random Forest**.
+2. **Discriminative Precision Lift:** Precision at default threshold reached **58.24%** on GPU XGBoost (vs 21.13% for CPU HistGradientBoosting), with PR-AUC reaching **0.5555** (the highest discrimination recorded).
+3. **VIP Customer Protection:** On high-value Whale transactions (> $1,000), GPU XGBoost achieved **66.7% precision** (cutting false positive friction by more than 85% compared to the baseline 10.0% precision).
+
