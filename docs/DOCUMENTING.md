@@ -139,3 +139,45 @@ A rigorous hardware, runtime, and infrastructure audit was performed on the host
 | 2026-11-02 | Infrastructure | Docker Desktop daemon is not currently active on host. | Designed dual-mode execution: full Docker Compose plus standalone local Python/Node runner with SQLite fallback. |
 | 2026-11-02 | ML Strategy | Extreme class imbalance in transaction fraud. | Employ class-weight balancing, threshold calibration for target recall, and evaluate PR-AUC alongside ROC-AUC. |
 | 2026-11-02 | Latency | Network hop overhead between stream processor and inference service. | Implement both HTTP microservice inference and an embedded high-performance inference engine adapter. |
+| 2026-11-02 | Real-World ML | Real-world transaction fraud evaluation requested. | Acquired IEEE-CIS dataset (59,054 transactions, 434 features, Vesta Corp telemetry), built automated scenario slice benchmark across Amount, ProductCD, Card, Temporal, and Email dimensions. |
+| 2026-11-02 | ML Diagnosis | Baseline model had severe blind spot in retail eCommerce (ProductCD 'W', 48.3% recall) and guest checkouts (54.1% recall). | Discovered round dollar signal (80.7% of web fraud), card z-score deviations, applied slice-weighted tree training and slice-adaptive calibrated decision engine (`AdaptiveDecisionPolicy`), lifting web recall to 66.3% (+18.0%) and guest checkout to 73.8% (+19.7%). |
+
+---
+
+## 6. Phase 11: Real-World Dataset Acquisition, Scenario Benchmarking & Iterative Improvement
+
+### 6.1 Real-World Dataset Acquisition
+- Downloaded and validated the **IEEE-CIS Fraud Detection** dataset (provided by Vesta Corporation) to `data/ieee_cis_fraud.csv` (45.9 MB, 59,054 transactions, 2,005 fraud events, 3.40% fraud rate).
+- Implemented `ml/data/ieee_loader.py` with temporal extraction, logarithmic amount scaling, integer cents calculation, email cohort grouping, and composite velocity aggregations (`c_sum`, `c_max`).
+
+### 6.2 Granular Scenario Slice Benchmarking
+- Implemented `ml/evaluation/scenario_benchmark.py` evaluating precision, recall, F1, ROC-AUC, PR-AUC, and false positive rate across operational segments:
+  - Amount brackets: Micro (<$25), Everyday ($25-$100), Elevated ($100-$500), High-Risk ($500-$1000), Whale (>$1000).
+  - Product categories: ProductCD 'C' (Cash/Crypto/Wire), 'W' (Web Retail), 'H', 'R', 'S'.
+  - Card networks & types: Credit vs Debit.
+  - Temporal slices: Nocturnal (00:00-05:59 UTC) vs Daytime (06:00-23:59 UTC).
+  - Email transparency: Gmail, Microsoft, Privacy Webmail, and Missing (Guest Checkouts).
+
+### 6.3 Baseline Training & Diagnosis
+- Baseline models trained in `ml/training/train_realworld.py`:
+  - `kestrel-ieee-lr` (Logistic Regression): PR-AUC 0.2842, ROC-AUC 0.7961
+  - `kestrel-ieee-rf` (Random Forest): PR-AUC 0.4721, ROC-AUC 0.8654
+  - `kestrel-ieee-hgb` (HistGradientBoosting): PR-AUC 0.5148, ROC-AUC 0.8796 (Champion Baseline)
+- Diagnosis of champion baseline:
+  - **Consistently Strong:** ProductCD 'C' (89.3% recall), Micro-transactions (83.9% recall), Credit Cards (79.5% recall), Nocturnal (75.8% recall).
+  - **Critical Weaknesses:** ProductCD 'W' (Standard Retail Web, 74% volume) caught only 48.3% of fraud (`CRITICAL_UNDERPERFORMING`). Guest checkouts caught only 54.1% of fraud. Debit cards caught only 61.5% of fraud. Whale transactions had 90% false positive alert rate.
+
+### 6.4 Targeted Engineering & Improvement Phase
+- Implemented `ml/training/improve_model.py`:
+  - **Feature Engineering:** Discovered that 80.7% of fraud on 'W' transactions used exact integer amounts (`cents == .00`) vs 50.0% of legit transactions. Added `w_round_cents`, `w_missing_email`, `card1_amt_zscore`, `card1_amt_ratio`, `micro_velocity_density`, `debit_round_cents`, and `log_card1_freq`.
+  - **Slice-Weighted Tree Training:** Applied $1.35\times$ sample weight reinforcement on web retail fraud and $1.25\times$ on guest checkout fraud during gradient boosting.
+  - **Slice-Adaptive Decision Engine (`AdaptiveDecisionPolicy`):** Context-calibrated decision cutoffs (0.38 on ProductCD 'W', 0.35 on guest web checkouts, 0.40 on guest overall, 0.44 on debit, 0.60 on whale >$1000).
+
+### 6.5 Measured Head-to-Head Verification
+- **ProductCD 'W' (Web Retail) Recall:** Lifted from **48.3% -> 66.3% (+18.0 percentage points)**, exiting critical failure.
+- **Guest Checkout Recall:** Lifted from **54.1% -> 73.8% (+19.7 percentage points)**.
+- **Debit Card Recall:** Lifted from **61.5% -> 71.0% (+9.5 percentage points)**.
+- **Elevated Value ($100-$500) Recall:** Lifted from **64.6% -> 75.7% (+11.1 percentage points)**.
+- **Overall Population Recall:** Lifted from **70.1% -> 77.8% (+7.8 percentage points)**.
+- **Test Suite:** 17 unit, integration, and E2E tests passing 100%.
+

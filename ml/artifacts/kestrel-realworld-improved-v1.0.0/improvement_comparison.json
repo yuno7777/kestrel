@@ -1,0 +1,458 @@
+{
+  "overall": {
+    "slice_name": "Overall Population",
+    "total_count": 14764,
+    "fraud_count": 501,
+    "baseline": {
+      "recall": 0.7006,
+      "precision": 0.2113,
+      "f1": 0.3247,
+      "status": "MODERATE"
+    },
+    "improved_standard_50": {
+      "recall": 0.7246,
+      "precision": 0.1682,
+      "f1": 0.273,
+      "status": "MODERATE"
+    },
+    "improved_adaptive": {
+      "recall": 0.7784,
+      "precision": 0.1266,
+      "f1": 0.2178,
+      "status": "GOOD"
+    },
+    "recall_lift_pct_pts": 7.78
+  },
+  "amount_micro_under_25": {
+    "slice_name": "Micro-Transactions (< $25)",
+    "total_count": 1174,
+    "fraud_count": 87,
+    "baseline": {
+      "recall": 0.8391,
+      "precision": 0.2744,
+      "f1": 0.4136,
+      "status": "GOOD"
+    },
+    "improved_standard_50": {
+      "recall": 0.8391,
+      "precision": 0.2744,
+      "f1": 0.4136,
+      "status": "GOOD"
+    },
+    "improved_adaptive": {
+      "recall": 0.8736,
+      "precision": 0.2428,
+      "f1": 0.38,
+      "status": "GOOD"
+    },
+    "recall_lift_pct_pts": 3.45
+  },
+  "amount_standard_25_100": {
+    "slice_name": "Everyday Standard ($25 - $100)",
+    "total_count": 7502,
+    "fraud_count": 207,
+    "baseline": {
+      "recall": 0.686,
+      "precision": 0.2168,
+      "f1": 0.3295,
+      "status": "MODERATE"
+    },
+    "improved_standard_50": {
+      "recall": 0.715,
+      "precision": 0.1731,
+      "f1": 0.2787,
+      "status": "MODERATE"
+    },
+    "improved_adaptive": {
+      "recall": 0.7633,
+      "precision": 0.1235,
+      "f1": 0.2127,
+      "status": "GOOD"
+    },
+    "recall_lift_pct_pts": 7.73
+  },
+  "amount_elevated_100_500": {
+    "slice_name": "Elevated Value ($100 - $500)",
+    "total_count": 5451,
+    "fraud_count": 181,
+    "baseline": {
+      "recall": 0.6464,
+      "precision": 0.186,
+      "f1": 0.2889,
+      "status": "MODERATE"
+    },
+    "improved_standard_50": {
+      "recall": 0.6851,
+      "precision": 0.1381,
+      "f1": 0.2298,
+      "status": "MODERATE"
+    },
+    "improved_adaptive": {
+      "recall": 0.7569,
+      "precision": 0.1036,
+      "f1": 0.1822,
+      "status": "GOOD"
+    },
+    "recall_lift_pct_pts": 11.05
+  },
+  "amount_high_risk_500_1000": {
+    "slice_name": "High-Value Outliers ($500 - $1,000)",
+    "total_count": 430,
+    "fraud_count": 23,
+    "baseline": {
+      "recall": 0.7391,
+      "precision": 0.1868,
+      "f1": 0.2982,
+      "status": "MODERATE"
+    },
+    "improved_standard_50": {
+      "recall": 0.6957,
+      "precision": 0.1481,
+      "f1": 0.2443,
+      "status": "MODERATE"
+    },
+    "improved_adaptive": {
+      "recall": 0.7391,
+      "precision": 0.1181,
+      "f1": 0.2036,
+      "status": "MODERATE"
+    },
+    "recall_lift_pct_pts": 0.0
+  },
+  "amount_whale_over_1000": {
+    "slice_name": "Whale Transactions (> $1,000)",
+    "total_count": 207,
+    "fraud_count": 3,
+    "baseline": {
+      "recall": 0.6667,
+      "precision": 0.1,
+      "f1": 0.1739,
+      "status": "MODERATE"
+    },
+    "improved_standard_50": {
+      "recall": 0.6667,
+      "precision": 0.0645,
+      "f1": 0.1176,
+      "status": "MODERATE"
+    },
+    "improved_adaptive": {
+      "recall": 0.6667,
+      "precision": 0.0952,
+      "f1": 0.1667,
+      "status": "MODERATE"
+    },
+    "recall_lift_pct_pts": 0.0
+  },
+  "product_C": {
+    "slice_name": "ProductCD 'C'",
+    "total_count": 1820,
+    "fraud_count": 196,
+    "baseline": {
+      "recall": 0.8929,
+      "precision": 0.2701,
+      "f1": 0.4147,
+      "status": "GOOD"
+    },
+    "improved_standard_50": {
+      "recall": 0.8878,
+      "precision": 0.2656,
+      "f1": 0.4089,
+      "status": "GOOD"
+    },
+    "improved_adaptive": {
+      "recall": 0.8929,
+      "precision": 0.2458,
+      "f1": 0.3855,
+      "status": "GOOD"
+    },
+    "recall_lift_pct_pts": 0.0
+  },
+  "product_W": {
+    "slice_name": "ProductCD 'W'",
+    "total_count": 10919,
+    "fraud_count": 211,
+    "baseline": {
+      "recall": 0.4834,
+      "precision": 0.1409,
+      "f1": 0.2182,
+      "status": "CRITICAL_UNDERPERFORMING"
+    },
+    "improved_standard_50": {
+      "recall": 0.5545,
+      "precision": 0.099,
+      "f1": 0.168,
+      "status": "CRITICAL_UNDERPERFORMING"
+    },
+    "improved_adaptive": {
+      "recall": 0.6635,
+      "precision": 0.0699,
+      "f1": 0.1265,
+      "status": "MODERATE"
+    },
+    "recall_lift_pct_pts": 18.01
+  },
+  "product_H": {
+    "slice_name": "ProductCD 'H'",
+    "total_count": 793,
+    "fraud_count": 39,
+    "baseline": {
+      "recall": 0.7949,
+      "precision": 0.2168,
+      "f1": 0.3407,
+      "status": "GOOD"
+    },
+    "improved_standard_50": {
+      "recall": 0.7692,
+      "precision": 0.1961,
+      "f1": 0.3125,
+      "status": "GOOD"
+    },
+    "improved_adaptive": {
+      "recall": 0.7692,
+      "precision": 0.184,
+      "f1": 0.297,
+      "status": "GOOD"
+    },
+    "recall_lift_pct_pts": -2.57
+  },
+  "product_R": {
+    "slice_name": "ProductCD 'R'",
+    "total_count": 951,
+    "fraud_count": 37,
+    "baseline": {
+      "recall": 0.8108,
+      "precision": 0.2752,
+      "f1": 0.411,
+      "status": "GOOD"
+    },
+    "improved_standard_50": {
+      "recall": 0.8108,
+      "precision": 0.2326,
+      "f1": 0.3614,
+      "status": "GOOD"
+    },
+    "improved_adaptive": {
+      "recall": 0.8378,
+      "precision": 0.2246,
+      "f1": 0.3543,
+      "status": "GOOD"
+    },
+    "recall_lift_pct_pts": 2.7
+  },
+  "product_S": {
+    "slice_name": "ProductCD 'S'",
+    "total_count": 281,
+    "fraud_count": 18,
+    "baseline": {
+      "recall": 0.7222,
+      "precision": 0.3514,
+      "f1": 0.4727,
+      "status": "MODERATE"
+    },
+    "improved_standard_50": {
+      "recall": 0.6667,
+      "precision": 0.3077,
+      "f1": 0.4211,
+      "status": "MODERATE"
+    },
+    "improved_adaptive": {
+      "recall": 0.7778,
+      "precision": 0.2154,
+      "f1": 0.3373,
+      "status": "GOOD"
+    },
+    "recall_lift_pct_pts": 5.56
+  },
+  "card_credit": {
+    "slice_name": "Card Type: CREDIT",
+    "total_count": 3704,
+    "fraud_count": 239,
+    "baseline": {
+      "recall": 0.795,
+      "precision": 0.2317,
+      "f1": 0.3588,
+      "status": "GOOD"
+    },
+    "improved_standard_50": {
+      "recall": 0.8201,
+      "precision": 0.2063,
+      "f1": 0.3297,
+      "status": "GOOD"
+    },
+    "improved_adaptive": {
+      "recall": 0.8536,
+      "precision": 0.1769,
+      "f1": 0.2931,
+      "status": "GOOD"
+    },
+    "recall_lift_pct_pts": 5.86
+  },
+  "card_debit": {
+    "slice_name": "Card Type: DEBIT",
+    "total_count": 11021,
+    "fraud_count": 262,
+    "baseline": {
+      "recall": 0.6145,
+      "precision": 0.193,
+      "f1": 0.2938,
+      "status": "MODERATE"
+    },
+    "improved_standard_50": {
+      "recall": 0.6374,
+      "precision": 0.1399,
+      "f1": 0.2294,
+      "status": "MODERATE"
+    },
+    "improved_adaptive": {
+      "recall": 0.7099,
+      "precision": 0.0974,
+      "f1": 0.1713,
+      "status": "MODERATE"
+    },
+    "recall_lift_pct_pts": 9.54
+  },
+  "temporal_nocturnal": {
+    "slice_name": "Nocturnal (00:00 - 05:59 UTC)",
+    "total_count": 3644,
+    "fraud_count": 128,
+    "baseline": {
+      "recall": 0.7578,
+      "precision": 0.2366,
+      "f1": 0.3606,
+      "status": "GOOD"
+    },
+    "improved_standard_50": {
+      "recall": 0.7578,
+      "precision": 0.1783,
+      "f1": 0.2887,
+      "status": "GOOD"
+    },
+    "improved_adaptive": {
+      "recall": 0.8359,
+      "precision": 0.1432,
+      "f1": 0.2446,
+      "status": "GOOD"
+    },
+    "recall_lift_pct_pts": 7.81
+  },
+  "temporal_daytime": {
+    "slice_name": "Daytime (06:00 - 23:59 UTC)",
+    "total_count": 11120,
+    "fraud_count": 373,
+    "baseline": {
+      "recall": 0.681,
+      "precision": 0.203,
+      "f1": 0.3128,
+      "status": "MODERATE"
+    },
+    "improved_standard_50": {
+      "recall": 0.7131,
+      "precision": 0.1648,
+      "f1": 0.2677,
+      "status": "MODERATE"
+    },
+    "improved_adaptive": {
+      "recall": 0.7587,
+      "precision": 0.1213,
+      "f1": 0.2092,
+      "status": "GOOD"
+    },
+    "recall_lift_pct_pts": 7.77
+  },
+  "email_privacy_webmail": {
+    "slice_name": "Email Group: privacy_webmail",
+    "total_count": 1037,
+    "fraud_count": 27,
+    "baseline": {
+      "recall": 0.6667,
+      "precision": 0.1343,
+      "f1": 0.2236,
+      "status": "MODERATE"
+    },
+    "improved_standard_50": {
+      "recall": 0.6667,
+      "precision": 0.1111,
+      "f1": 0.1905,
+      "status": "MODERATE"
+    },
+    "improved_adaptive": {
+      "recall": 0.7037,
+      "precision": 0.0941,
+      "f1": 0.1659,
+      "status": "MODERATE"
+    },
+    "recall_lift_pct_pts": 3.7
+  },
+  "email_gmail": {
+    "slice_name": "Email Group: gmail",
+    "total_count": 5710,
+    "fraud_count": 246,
+    "baseline": {
+      "recall": 0.7724,
+      "precision": 0.2461,
+      "f1": 0.3733,
+      "status": "GOOD"
+    },
+    "improved_standard_50": {
+      "recall": 0.7805,
+      "precision": 0.2056,
+      "f1": 0.3254,
+      "status": "GOOD"
+    },
+    "improved_adaptive": {
+      "recall": 0.8252,
+      "precision": 0.162,
+      "f1": 0.2708,
+      "status": "GOOD"
+    },
+    "recall_lift_pct_pts": 5.28
+  },
+  "email_microsoft": {
+    "slice_name": "Email Group: microsoft",
+    "total_count": 1395,
+    "fraud_count": 79,
+    "baseline": {
+      "recall": 0.7595,
+      "precision": 0.2143,
+      "f1": 0.3343,
+      "status": "GOOD"
+    },
+    "improved_standard_50": {
+      "recall": 0.7848,
+      "precision": 0.1925,
+      "f1": 0.3092,
+      "status": "GOOD"
+    },
+    "improved_adaptive": {
+      "recall": 0.7848,
+      "precision": 0.1703,
+      "f1": 0.2799,
+      "status": "GOOD"
+    },
+    "recall_lift_pct_pts": 2.53
+  },
+  "email_missing": {
+    "slice_name": "Email Group: missing",
+    "total_count": 2348,
+    "fraud_count": 61,
+    "baseline": {
+      "recall": 0.541,
+      "precision": 0.1774,
+      "f1": 0.2672,
+      "status": "CRITICAL_UNDERPERFORMING"
+    },
+    "improved_standard_50": {
+      "recall": 0.6066,
+      "precision": 0.1167,
+      "f1": 0.1958,
+      "status": "MODERATE"
+    },
+    "improved_adaptive": {
+      "recall": 0.7377,
+      "precision": 0.0703,
+      "f1": 0.1284,
+      "status": "MODERATE"
+    },
+    "recall_lift_pct_pts": 19.67
+  }
+}

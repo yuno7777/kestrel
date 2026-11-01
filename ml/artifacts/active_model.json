@@ -1,7 +1,11 @@
 {
-  "active_model_version": "kestrel-rf-v1.0.0",
-  "activated_at": "2026-11-01T22:18:09.941168+00:00",
-  "algorithm": "RandomForestClassifier",
-  "pr_auc": 0.8455,
-  "roc_auc": 0.9924
+  "active_model_version": "kestrel-realworld-improved-v1.0.0",
+  "activated_at": "2026-11-01T23:34:25Z",
+  "algorithm": "HistGradientBoostingClassifier (Sample Weighted + Slice Calibrated)",
+  "dataset": "IEEE-CIS Real-World Fraud Telemetry (59,054 transactions)",
+  "test_roc_auc": 0.8811,
+  "test_pr_auc": 0.5088,
+  "adaptive_test_recall": 0.7784,
+  "adaptive_test_precision": 0.1266,
+  "adaptive_test_f1": 0.2178
 }

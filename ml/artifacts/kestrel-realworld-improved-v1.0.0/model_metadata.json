@@ -1,0 +1,12 @@
+{
+  "model_id": "kestrel-realworld-improved-v1.0.0",
+  "dataset": "IEEE-CIS Fraud Detection (Real-World)",
+  "algorithm": "HistGradientBoostingClassifier (Sample Weighted + Slice Calibrated)",
+  "features_count": 108,
+  "test_roc_auc": 0.8811,
+  "test_pr_auc": 0.5088,
+  "overall_recall_adaptive": 0.7784,
+  "overall_precision_adaptive": 0.1266,
+  "overall_f1_adaptive": 0.2178,
+  "trained_at": "2026-11-01T23:34:25Z"
+}

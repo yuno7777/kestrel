@@ -1,0 +1,70 @@
+{
+  "model_id": "kestrel-realworld-improved-v1.0.0",
+  "algorithm": "HistGradientBoostingClassifier (Sample Weighted + Slice Calibrated)",
+  "trained_at": "2026-11-01T23:34:25Z",
+  "dataset": "IEEE-CIS Real-World Fraud Telemetry (59,054 transactions)",
+  "test_roc_auc": 0.8811,
+  "test_pr_auc": 0.5088,
+  "test_precision": 0.1682,
+  "test_recall": 0.7246,
+  "test_f1": 0.273,
+  "adaptive_test_recall": 0.7784,
+  "adaptive_test_precision": 0.1266,
+  "adaptive_test_f1": 0.2178,
+  "threshold_analysis": [
+    {
+      "threshold": 0.2,
+      "precision": 0.0812,
+      "recall": 0.9261,
+      "f1": 0.1494
+    },
+    {
+      "threshold": 0.3,
+      "precision": 0.1105,
+      "recall": 0.8543,
+      "f1": 0.1957
+    },
+    {
+      "threshold": 0.38,
+      "precision": 0.1347,
+      "recall": 0.7964,
+      "f1": 0.2305
+    },
+    {
+      "threshold": 0.45,
+      "precision": 0.1533,
+      "recall": 0.7485,
+      "f1": 0.2546
+    },
+    {
+      "threshold": 0.5,
+      "precision": 0.1682,
+      "recall": 0.7246,
+      "f1": 0.273
+    },
+    {
+      "threshold": 0.6,
+      "precision": 0.2014,
+      "recall": 0.6407,
+      "f1": 0.3065
+    },
+    {
+      "threshold": 0.7,
+      "precision": 0.2625,
+      "recall": 0.5349,
+      "f1": 0.3522
+    },
+    {
+      "threshold": 0.8,
+      "precision": 0.3647,
+      "recall": 0.3713,
+      "f1": 0.3679
+    }
+  ],
+  "scenario_lifts": {
+    "product_w_recall": "+18.0% (48.3% -> 66.3%)",
+    "guest_checkout_recall": "+19.7% (54.1% -> 73.8%)",
+    "debit_card_recall": "+9.5% (61.5% -> 71.0%)",
+    "overall_recall": "+7.8% (70.1% -> 77.8%)"
+  }
+}

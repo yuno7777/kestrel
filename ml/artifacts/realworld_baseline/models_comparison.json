@@ -1,0 +1,62 @@
+{
+  "kestrel-ieee-lr": {
+    "model_id": "kestrel-ieee-lr",
+    "algorithm": "LogisticRegression",
+    "train_time_sec": 1.62,
+    "test_pr_auc": 0.3127,
+    "test_roc_auc": 0.8446,
+    "test_precision": 0.1124,
+    "test_recall": 0.7265,
+    "test_f1": 0.1947,
+    "confusion_matrix": [
+      [
+        11389,
+        2874
+      ],
+      [
+        137,
+        364
+      ]
+    ]
+  },
+  "kestrel-ieee-rf": {
+    "model_id": "kestrel-ieee-rf",
+    "algorithm": "RandomForestClassifier",
+    "train_time_sec": 0.39,
+    "test_pr_auc": 0.498,
+    "test_roc_auc": 0.8818,
+    "test_precision": 0.2552,
+    "test_recall": 0.6587,
+    "test_f1": 0.3679,
+    "confusion_matrix": [
+      [
+        13300,
+        963
+      ],
+      [
+        171,
+        330
+      ]
+    ]
+  },
+  "kestrel-ieee-hgb": {
+    "model_id": "kestrel-ieee-hgb",
+    "algorithm": "HistGradientBoostingClassifier",
+    "train_time_sec": 4.05,
+    "test_pr_auc": 0.5148,
+    "test_roc_auc": 0.8796,
+    "test_precision": 0.2113,
+    "test_recall": 0.7006,
+    "test_f1": 0.3247,
+    "confusion_matrix": [
+      [
+        12953,
+        1310
+      ],
+      [
+        150,
+        351
+      ]
+    ]
+  }
+}
