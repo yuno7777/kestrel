@@ -1,0 +1,70 @@
+{
+  "model_id": "kestrel-rf-v1.0.0",
+  "algorithm": "RandomForestClassifier",
+  "trained_at": "2026-11-01T22:18:09.538463+00:00",
+  "test_roc_auc": 0.9924,
+  "test_pr_auc": 0.8455,
+  "test_precision": 0.581,
+  "test_recall": 0.8963,
+  "test_f1": 0.705,
+  "confusion_matrix": [
+    [
+      5980,
+      106
+    ],
+    [
+      17,
+      147
+    ]
+  ],
+  "threshold_analysis": [
+    {
+      "threshold": 0.2,
+      "precision": 0.3019,
+      "recall": 0.9756,
+      "f1": 0.4611
+    },
+    {
+      "threshold": 0.3,
+      "precision": 0.4005,
+      "recall": 0.9573,
+      "f1": 0.5647
+    },
+    {
+      "threshold": 0.4,
+      "precision": 0.4903,
+      "recall": 0.9268,
+      "f1": 0.6414
+    },
+    {
+      "threshold": 0.5,
+      "precision": 0.581,
+      "recall": 0.8963,
+      "f1": 0.705
+    },
+    {
+      "threshold": 0.6,
+      "precision": 0.6682,
+      "recall": 0.872,
+      "f1": 0.7566
+    },
+    {
+      "threshold": 0.7,
+      "precision": 0.7371,
+      "recall": 0.7866,
+      "f1": 0.7611
+    },
+    {
+      "threshold": 0.75,
+      "precision": 0.7778,
+      "recall": 0.7683,
+      "f1": 0.773
+    },
+    {
+      "threshold": 0.85,
+      "precision": 0.8485,
+      "recall": 0.6829,
+      "f1": 0.7568
+    }
+  ]
+}

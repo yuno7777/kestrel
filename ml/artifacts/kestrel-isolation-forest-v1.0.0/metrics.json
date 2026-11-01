@@ -1,0 +1,7 @@
+{
+  "model_id": "kestrel-isolation-forest-v1.0.0",
+  "algorithm": "IsolationForest",
+  "trained_at": "2026-11-01T22:18:09.920833+00:00",
+  "test_roc_auc": 0.7452,
+  "test_pr_auc": 0.1366
+}
