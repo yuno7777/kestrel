@@ -18,7 +18,7 @@ import { subscribeToLiveStream } from './services/api';
 export function App() {
   const [currentTab, setCurrentTab] = useState<NavItem>('overview');
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
-  const [isConnected, setIsConnected] = useState<boolean>(true);
+  const [isConnected, setIsConnected] = useState<boolean>(false);
 
   useEffect(() => {
     // Monitor SSE health
@@ -46,7 +46,7 @@ export function App() {
       case 'drift-monitoring':
         return <DriftMonitoring />;
       case 'streaming':
-        return <EventStreaming />;
+        return <EventStreaming onSelectTransaction={setSelectedTransaction} />;
       case 'infrastructure':
         return <Infrastructure />;
       case 'settings':
@@ -57,16 +57,16 @@ export function App() {
   };
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-[#090a0f] text-slate-100 font-sans antialiased">
+    <div className="app-shell">
       {/* Sidebar Navigation */}
       <Sidebar currentTab={currentTab} onSelectTab={setCurrentTab} />
 
       {/* Main Workspace Area */}
-      <div className="flex-1 flex flex-col h-full overflow-hidden">
+      <div className="app-workspace">
         <Header currentTab={currentTab} isConnected={isConnected} />
 
         {/* Scrollable Page Content */}
-        <main className="flex-1 overflow-y-auto bg-[#090a0f]">
+        <main className="app-content">
           {renderActivePage()}
         </main>
       </div>
@@ -75,7 +75,6 @@ export function App() {
       <TransactionDrawer
         transaction={selectedTransaction}
         onClose={() => setSelectedTransaction(null)}
-        onFeedbackSubmitted={() => setSelectedTransaction(null)}
       />
     </div>
   );

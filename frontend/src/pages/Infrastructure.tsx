@@ -1,99 +1,87 @@
-import React from 'react';
-import { Server, Database, Activity, CheckCircle2, Cpu, HardDrive } from 'lucide-react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { RefreshCw } from 'lucide-react';
+import { PageHeader } from '../components/PageHeader';
+import { fetchApiHealth, fetchApiReadiness, fetchSummary } from '../services/api';
+import { ServiceHealth, SystemSummary } from '../types';
+
+type ProbeState = 'healthy' | 'warning' | 'unknown';
 
 export const Infrastructure: React.FC = () => {
-  const services = [
-    {
-      name: 'Kestrel FastAPI Service',
-      role: 'Inference & REST API',
-      port: '8000',
-      uptime: '99.98%',
-      latency: '3.2 ms',
-      status: 'ONLINE',
-    },
-    {
-      name: 'Kestrel Stream Processor',
-      role: 'Async Stream Ingestion & Enrichment',
-      port: 'Internal',
-      uptime: '99.99%',
-      latency: '1.4 ms',
-      status: 'ONLINE',
-    },
-    {
-      name: 'Redis 7 Feature Store',
-      role: 'Sliding-Window Atomic ZSETs',
-      port: '6379',
-      uptime: '100%',
-      latency: '0.8 ms',
-      status: 'ONLINE',
-    },
-    {
-      name: 'PostgreSQL 16 / SQLite',
-      role: 'Durable Relational Store & Audit Trails',
-      port: '5432 / Local',
-      uptime: '99.95%',
-      latency: '2.1 ms',
-      status: 'ONLINE',
-    },
-    {
-      name: 'Apache Kafka Broker (KRaft)',
-      role: 'Distributed Event Streaming Backbone',
-      port: '9092',
-      uptime: '99.99%',
-      latency: '2.5 ms',
-      status: 'ONLINE',
-    },
-    {
-      name: 'Prometheus Timeseries',
-      role: 'Metrics Scraper & Histograms',
-      port: '9090',
-      uptime: '100%',
-      latency: 'N/A',
-      status: 'ONLINE',
-    },
-    {
-      name: 'Grafana Dashboards',
-      role: 'Provisioned Telemetry Visualization',
-      port: '3000',
-      uptime: '100%',
-      latency: 'N/A',
-      status: 'ONLINE',
-    },
-  ];
+  const [health, setHealth] = useState<ServiceHealth | null>(null);
+  const [readiness, setReadiness] = useState<ServiceHealth | null>(null);
+  const [summary, setSummary] = useState<SystemSummary | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  const refresh = useCallback(async () => {
+    setLoading(true);
+    const [healthResult, readinessResult, summaryResult] = await Promise.allSettled([
+      fetchApiHealth(), fetchApiReadiness(), fetchSummary(),
+    ]);
+    if (healthResult.status === 'fulfilled') setHealth(healthResult.value);
+    if (readinessResult.status === 'fulfilled') setReadiness(readinessResult.value);
+    if (summaryResult.status === 'fulfilled') setSummary(summaryResult.value);
+    setError([healthResult, readinessResult, summaryResult].some((result) => result.status === 'rejected'));
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    void refresh();
+    const timer = window.setInterval(() => void refresh(), 10000);
+    return () => window.clearInterval(timer);
+  }, [refresh]);
+
+  const apiState: ProbeState = health?.status === 'ok' ? 'healthy' : health ? 'warning' : 'unknown';
+  const modelState: ProbeState = readiness?.ready ? 'healthy' : readiness ? 'warning' : 'unknown';
+  const storeState: ProbeState = summary ? 'healthy' : 'unknown';
 
   return (
-    <div className="p-8 space-y-6 max-w-7xl mx-auto">
-      <div>
-        <h2 className="text-xl font-bold text-white tracking-tight">Infrastructure Health & Topology</h2>
-        <p className="text-xs text-slate-400 mt-1">
-          Real-time service availability, latency health probes, and cluster resource status.
-        </p>
-      </div>
+    <section className="page-view" aria-label="Infrastructure status">
+      <PageHeader
+        title="Infrastructure"
+        description="API liveness, model readiness, and persisted transaction volume."
+        action={<button type="button" className="page-control flex items-center gap-2" disabled={loading} onClick={() => void refresh()}><RefreshCw size={13} strokeWidth={1.4} />Refresh checks</button>}
+      />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {services.map((s) => (
-          <div
-            key={s.name}
-            className="bg-[#11131c] border border-[#202538] rounded-lg p-5 flex flex-col justify-between hover:border-[#2f3854] transition-colors"
-          >
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold">
-                  {s.status}
-                </span>
-                <span className="font-mono text-xs text-slate-400">{s.port}</span>
-              </div>
-              <div className="text-sm font-semibold text-white mt-1">{s.name}</div>
-              <div className="text-xs text-slate-400 mt-0.5">{s.role}</div>
-            </div>
+      {error && <div className="page-note" role="status">One or more checks failed. Each card retains its last successful response.</div>}
 
-            <div className="mt-5 pt-3 border-t border-[#1c2235] flex items-center justify-between text-xs font-mono text-slate-300">
-              <span>Uptime: {s.uptime}</span>
-              <span className="text-cyan-400">Lat: {s.latency}</span>
-            </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <article className="page-card">
+          <div className="page-card-heading">
+            <div><div className="page-card-title">API liveness</div><div className="page-card-caption">GET /api/v1/system/health</div></div>
+            <span className="page-status" data-state={apiState}>{health?.status === 'ok' ? 'Reachable' : health ? 'Unavailable' : 'Unknown'}</span>
           </div>
-        ))}
+          <div className="page-card-body">
+            <div className="page-metric-label">Last response</div>
+            <div className="page-metric-note">{health?.timestamp ? new Date(health.timestamp).toLocaleString() : 'No successful response yet'}</div>
+          </div>
+        </article>
+
+        <article className="page-card">
+          <div className="page-card-heading">
+            <div><div className="page-card-title">Model readiness</div><div className="page-card-caption">GET /api/v1/system/ready</div></div>
+            <span className="page-status" data-state={modelState}>{readiness?.ready ? 'Ready' : readiness ? 'Not ready' : 'Unknown'}</span>
+          </div>
+          <div className="page-card-body">
+            <div className="page-metric-label">Active model</div>
+            <div className="page-metric-note" title={readiness?.active_model ?? undefined}>{readiness?.active_model ?? 'No model reported'}</div>
+          </div>
+        </article>
+
+        <article className="page-card">
+          <div className="page-card-heading">
+            <div><div className="page-card-title">Persistence query</div><div className="page-card-caption">Monitoring summary endpoint</div></div>
+            <span className="page-status" data-state={storeState}>{summary ? 'Responding' : 'Unknown'}</span>
+          </div>
+          <div className="page-card-body">
+            <div className="page-metric-label">Transactions in summary</div>
+            <div className="page-metric-value">{summary?.total_transactions_processed.toLocaleString() ?? '—'}</div>
+            <div className="page-metric-note">A successful summary query confirms the configured store is responding.</div>
+          </div>
+        </article>
       </div>
-    </div>
+
+      <div className="page-note">Kafka, Redis, and cluster probes are not exposed by this API.</div>
+    </section>
   );
 };

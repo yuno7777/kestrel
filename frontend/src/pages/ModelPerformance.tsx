@@ -1,212 +1,162 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
-  ResponsiveContainer,
-  LineChart,
+  CartesianGrid,
   Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  Tooltip,
-  Legend,
-  CartesianGrid,
 } from 'recharts';
-import { BarChart3, Sliders, ShieldCheck, DollarSign } from 'lucide-react';
+import { PageHeader } from '../components/PageHeader';
+import { fetchModels } from '../services/api';
+import { ModelInfo } from '../types';
+
+const metric = (value?: number) => value == null ? '—' : value.toFixed(4);
+const ratio = (value?: number) => value == null ? '—' : `${(value * 100).toFixed(1)}%`;
+
+const PerformanceTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ name: string; value: number }>; label?: number }) => {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="chart-tooltip">
+      <div className="mb-1">Threshold {(Number(label) * 100).toFixed(0)}%</div>
+      {payload.map((item) => <div key={item.name}>{item.name} {ratio(item.value)}</div>)}
+    </div>
+  );
+};
 
 export const ModelPerformance: React.FC = () => {
-  const [selectedThreshold, setSelectedThreshold] = useState<number>(0.75);
+  const [models, setModels] = useState<ModelInfo[]>([]);
+  const [selectedId, setSelectedId] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  const thresholdData = [
-    { threshold: 0.2, precision: 0.38, recall: 0.98, f1: 0.55, cost: 4200 },
-    { threshold: 0.3, precision: 0.49, recall: 0.96, f1: 0.65, cost: 3600 },
-    { threshold: 0.4, precision: 0.62, recall: 0.94, f1: 0.75, cost: 2900 },
-    { threshold: 0.5, precision: 0.71, recall: 0.90, f1: 0.79, cost: 2450 },
-    { threshold: 0.6, precision: 0.82, recall: 0.86, f1: 0.84, cost: 2100 },
-    { threshold: 0.7, precision: 0.89, recall: 0.82, f1: 0.85, cost: 1850 },
-    { threshold: 0.75, precision: 0.93, recall: 0.78, f1: 0.85, cost: 1720 },
-    { threshold: 0.85, precision: 0.97, recall: 0.65, f1: 0.78, cost: 2300 },
-  ];
+  useEffect(() => {
+    let active = true;
+    fetchModels().then((data) => {
+      if (!active) return;
+      setModels(data);
+      setSelectedId(data.find((model) => model.is_active)?.model_id ?? data[0]?.model_id ?? '');
+      setError(false);
+    }).catch((cause) => {
+      console.error('Unable to load model metrics', cause);
+      if (active) setError(true);
+    }).finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, []);
+
+  const model = models.find((item) => item.model_id === selectedId) ?? null;
+  const thresholdData = model?.threshold_analysis ?? [];
+  const confusion = model?.confusion_matrix;
+  const confusionTotal = confusion?.flat().reduce((total, value) => total + value, 0);
+
+  const metrics = useMemo(() => [
+    { label: 'PR-AUC', value: metric(model?.test_pr_auc) },
+    { label: 'ROC-AUC', value: metric(model?.test_roc_auc) },
+    { label: 'Precision', value: ratio(model?.test_precision) },
+    { label: 'Recall', value: ratio(model?.test_recall) },
+  ], [model]);
 
   return (
-    <div className="p-8 space-y-8 max-w-7xl mx-auto">
-      <div>
-        <h2 className="text-xl font-bold text-white tracking-tight">
-          Model Evaluation & Decision Optimization
-        </h2>
-        <p className="text-xs text-slate-400 mt-1">
-          Precision-Recall dynamics, confusion matrix breakdown, and business financial loss curves.
-        </p>
+    <section className="page-view" aria-label="Model evaluation">
+      <PageHeader
+        title="Model performance"
+        description="Holdout metrics and threshold results for the selected model."
+        action={<select className="page-select" aria-label="Select model" value={selectedId} onChange={(event) => setSelectedId(event.target.value)} disabled={!models.length}>
+          {models.map((item) => <option key={item.model_id} value={item.model_id}>{item.model_id}{item.is_active ? ' · active' : ''}</option>)}
+        </select>}
+      />
+
+      {error && <div className="page-note" role="status">Model metrics could not be loaded.</div>}
+
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {metrics.map((item) => (
+          <article className="page-metric" key={item.label}>
+            <div className="page-metric-label">{item.label}</div>
+            <div className="page-metric-value">{item.value}</div>
+            <div className="page-metric-note">{model?.is_active ? 'Active model holdout result' : 'Selected model holdout result'}</div>
+          </article>
+        ))}
       </div>
 
-      {/* Grid: Curves & Confusion Matrix */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Precision vs Recall vs Threshold Chart */}
-        <div className="bg-[#11131c] border border-[#202538] rounded-lg p-5 lg:col-span-2">
-          <div className="flex items-center justify-between mb-4">
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.5fr)_minmax(280px,0.8fr)] gap-4">
+        <section className="page-card" aria-labelledby="threshold-chart-title">
+          <div className="page-card-heading">
             <div>
-              <div className="text-xs uppercase font-medium tracking-wider text-slate-400">
-                Precision-Recall Tradeoff
-              </div>
-              <div className="text-sm font-semibold text-slate-200 mt-0.5">
-                Evaluation Curves Across Cutoff Thresholds
-              </div>
+              <div className="page-card-title" id="threshold-chart-title">Precision and recall by threshold</div>
+              <div className="page-card-caption">Values are read from the selected model’s evaluation artifact</div>
             </div>
-            <div className="text-xs text-cyan-400 font-mono">PR-AUC: 0.8455</div>
+            <span className="page-card-caption">{model?.algorithm ?? 'Model unavailable'}</span>
           </div>
-
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={thresholdData} margin={{ top: 10, right: 20, left: -20, bottom: 0 }}>
-                <CartesianGrid stroke="#1c2235" strokeDasharray="3 3" />
-                <XAxis dataKey="threshold" stroke="#475569" fontSize={11} />
-                <YAxis stroke="#475569" fontSize={11} domain={[0.2, 1.0]} />
-                <Tooltip
-                  contentStyle={{ backgroundColor: '#131622', borderColor: '#23293d', borderRadius: '6px' }}
-                  itemStyle={{ fontSize: '12px' }}
-                />
-                <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />
-                <Line
-                  type="monotone"
-                  dataKey="precision"
-                  stroke="#10b981"
-                  strokeWidth={2}
-                  name="Precision"
-                />
-                <Line
-                  type="monotone"
-                  dataKey="recall"
-                  stroke="#06b6d4"
-                  strokeWidth={2}
-                  name="Recall"
-                />
-                <Line
-                  type="monotone"
-                  dataKey="f1"
-                  stroke="#f59e0b"
-                  strokeWidth={2}
-                  name="F1-Score"
-                />
-              </LineChart>
-            </ResponsiveContainer>
+          <div className="page-chart">
+            {thresholdData.length ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={thresholdData} margin={{ top: 10, right: 14, left: -18, bottom: 0 }}>
+                  <CartesianGrid vertical={false} stroke="#202020" strokeDasharray="2 5" />
+                  <XAxis dataKey="threshold" axisLine={false} tickLine={false} tickFormatter={(value: number) => `${Math.round(value * 100)}%`} />
+                  <YAxis domain={[0, 1]} axisLine={false} tickLine={false} tickFormatter={(value: number) => `${Math.round(value * 100)}%`} />
+                  <Tooltip content={<PerformanceTooltip />} />
+                  <Line type="monotone" dataKey="precision" name="Precision" stroke="#f0f0f0" strokeWidth={1.6} dot={false} activeDot={{ r: 3 }} />
+                  <Line type="monotone" dataKey="recall" name="Recall" stroke="#999" strokeWidth={1.4} dot={false} activeDot={{ r: 3 }} />
+                  <Line type="monotone" dataKey="f1" name="F1" stroke="#555" strokeWidth={1.4} dot={false} activeDot={{ r: 3 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="page-empty">{loading ? 'Loading evaluation data…' : 'This model artifact has no threshold analysis.'}</div>
+            )}
           </div>
-        </div>
+        </section>
 
-        {/* 2x2 Confusion Matrix */}
-        <div className="bg-[#11131c] border border-[#202538] rounded-lg p-5 flex flex-col justify-between">
-          <div>
-            <div className="text-xs uppercase font-medium tracking-wider text-slate-400">
-              Confusion Matrix
-            </div>
-            <div className="text-sm font-semibold text-slate-200 mt-0.5 mb-4">
-              Holdout Test Set (N = 6,250)
-            </div>
-
-            <div className="grid grid-cols-2 gap-2 text-center">
-              <div className="bg-[#161a29] border border-emerald-500/20 rounded p-4">
-                <div className="text-[10px] uppercase text-emerald-400 font-medium">
-                  True Negative
-                </div>
-                <div className="text-xl font-bold font-mono text-white mt-1">6,028</div>
-                <div className="text-[10px] text-slate-400 mt-1">Legit correctly passed</div>
-              </div>
-              <div className="bg-[#161a29] border border-rose-500/20 rounded p-4">
-                <div className="text-[10px] uppercase text-rose-400 font-medium">
-                  False Positive
-                </div>
-                <div className="text-xl font-bold font-mono text-white mt-1">58</div>
-                <div className="text-[10px] text-slate-400 mt-1">Legit challenged</div>
-              </div>
-              <div className="bg-[#161a29] border border-amber-500/20 rounded p-4">
-                <div className="text-[10px] uppercase text-amber-400 font-medium">
-                  False Negative
-                </div>
-                <div className="text-xl font-bold font-mono text-white mt-1">17</div>
-                <div className="text-[10px] text-slate-400 mt-1">Fraud missed</div>
-              </div>
-              <div className="bg-[#161a29] border border-cyan-500/20 rounded p-4">
-                <div className="text-[10px] uppercase text-cyan-400 font-medium">
-                  True Positive
-                </div>
-                <div className="text-xl font-bold font-mono text-white mt-1">147</div>
-                <div className="text-[10px] text-slate-400 mt-1">Fraud intercepted</div>
-              </div>
+        <section className="page-card" aria-labelledby="confusion-matrix-title">
+          <div className="page-card-heading">
+            <div>
+              <div className="page-card-title" id="confusion-matrix-title">Confusion matrix</div>
+              <div className="page-card-caption">Holdout set{confusionTotal == null ? '' : ` · n = ${confusionTotal.toLocaleString()}`}</div>
             </div>
           </div>
-
-          <div className="pt-4 border-t border-[#1e2336] text-[11px] text-slate-400 text-center">
-            Recall: <span className="text-emerald-400 font-bold">89.6%</span> &bull; Precision:{' '}
-            <span className="text-cyan-400 font-bold">71.7%</span>
-          </div>
-        </div>
+          {confusion?.length === 2 && confusion[0]?.length === 2 && confusion[1]?.length === 2 ? (
+            <div className="page-card-body">
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { label: 'True negative', value: confusion[0][0] },
+                  { label: 'False positive', value: confusion[0][1] },
+                  { label: 'False negative', value: confusion[1][0] },
+                  { label: 'True positive', value: confusion[1][1] },
+                ].map((cell) => (
+                  <div className="page-card-inset rounded-lg p-4" key={cell.label}>
+                    <div className="page-metric-label">{cell.label}</div>
+                    <div className="page-metric-value">{cell.value.toLocaleString()}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : <div className="page-card-body page-empty">No confusion matrix was stored for this model.</div>}
+        </section>
       </div>
 
-      {/* Threshold & Cost Analysis Table */}
-      <div className="bg-[#11131c] border border-[#202538] rounded-lg p-5">
-        <div className="flex items-center justify-between mb-4">
+      <section className="page-card" aria-labelledby="threshold-table-title">
+        <div className="page-card-heading">
           <div>
-            <div className="text-xs uppercase font-medium tracking-wider text-slate-400">
-              Business Loss Curve Analysis
-            </div>
-            <div className="text-sm font-semibold text-slate-200 mt-0.5">
-              Simulated Loss vs Decision Cutoff ($250 chargeback FN, $15 friction FP)
-            </div>
-          </div>
-          <div className="text-xs text-emerald-400 font-medium flex items-center gap-1">
-            <DollarSign className="w-3.5 h-3.5" />
-            <span>Optimal Cost Minimizer: 0.75</span>
+            <div className="page-card-title" id="threshold-table-title">Threshold evaluation</div>
+            <div className="page-card-caption">Precision, recall, and F1 across evaluated thresholds</div>
           </div>
         </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-[#151928] text-slate-400 border-b border-[#202538] uppercase font-mono text-[10px]">
-              <tr>
-                <th className="py-2.5 px-4">Threshold</th>
-                <th className="py-2.5 px-4">Precision</th>
-                <th className="py-2.5 px-4">Recall</th>
-                <th className="py-2.5 px-4">F1 Score</th>
-                <th className="py-2.5 px-4">Expected Monthly Cost</th>
-                <th className="py-2.5 px-4 text-right">Recommendation</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#1c2235]">
-              {thresholdData.map((row) => (
-                <tr
-                  key={row.threshold}
-                  className={`hover:bg-[#161a29] transition-colors ${
-                    row.threshold === 0.75 ? 'bg-cyan-950/20 font-medium' : ''
-                  }`}
-                >
-                  <td className="py-2.5 px-4 font-mono text-cyan-400">
-                    {row.threshold.toFixed(2)}
-                  </td>
-                  <td className="py-2.5 px-4 font-mono text-slate-200">
-                    {(row.precision * 100).toFixed(1)}%
-                  </td>
-                  <td className="py-2.5 px-4 font-mono text-slate-200">
-                    {(row.recall * 100).toFixed(1)}%
-                  </td>
-                  <td className="py-2.5 px-4 font-mono text-slate-200">
-                    {(row.f1 * 100).toFixed(1)}%
-                  </td>
-                  <td className="py-2.5 px-4 font-mono text-white font-semibold">
-                    ${row.cost.toLocaleString()}
-                  </td>
-                  <td className="py-2.5 px-4 text-right">
-                    {row.threshold === 0.75 ? (
-                      <span className="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-[10px] font-bold">
-                        ACTIVE PRODUCTION POLICY
-                      </span>
-                    ) : row.threshold < 0.4 ? (
-                      <span className="text-amber-400 text-[10px]">Excessive False Positives</span>
-                    ) : (
-                      <span className="text-slate-400 text-[10px]">Elevated Fraud Slippage</span>
-                    )}
-                  </td>
+        <div className="page-table-wrap">
+          <table className="page-table">
+            <thead><tr><th scope="col">Threshold</th><th scope="col">Precision</th><th scope="col">Recall</th><th scope="col">F1</th></tr></thead>
+            <tbody>
+              {thresholdData.length ? thresholdData.map((row) => (
+                <tr key={row.threshold}>
+                  <td className="numeric">{row.threshold.toFixed(2)}</td>
+                  <td className="numeric">{ratio(row.precision)}</td>
+                  <td className="numeric">{ratio(row.recall)}</td>
+                  <td className="numeric">{ratio(row.f1)}</td>
                 </tr>
-              ))}
+              )) : <tr><td className="page-empty" colSpan={4}>Threshold data unavailable.</td></tr>}
             </tbody>
           </table>
         </div>
-      </div>
-    </div>
+      </section>
+    </section>
   );
 };

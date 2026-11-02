@@ -49,6 +49,19 @@ export interface SystemSummary {
   system_status: string;
 }
 
+export interface DecisionPolicy {
+  approve_threshold: number;
+  block_threshold: number;
+  adaptive_enabled: boolean;
+}
+
+export interface ServiceHealth {
+  status?: string;
+  ready?: boolean;
+  active_model?: string | null;
+  timestamp?: string;
+}
+
 export interface ModelInfo {
   model_id: string;
   algorithm?: string;
@@ -80,6 +93,7 @@ export interface DriftFeature {
 
 export interface DriftReport {
   overall_status: string;
-  evaluated_features_count: number;
+  evaluated_features_count?: number;
+  message?: string;
   features: DriftFeature[];
 }

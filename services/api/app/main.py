@@ -100,12 +100,14 @@ app.add_middleware(
 # ------------------------------------------------------------------------------
 
 @app.get("/health", tags=["System"])
+@app.get("/api/v1/system/health", tags=["System"])
 async def health_check():
     """Liveness probe."""
     return {"status": "ok", "timestamp": datetime.now(timezone.utc).isoformat()}
 
 
 @app.get("/ready", tags=["System"])
+@app.get("/api/v1/system/ready", tags=["System"])
 async def readiness_check():
     """Readiness probe verifying model cache."""
     is_ready = model_manager.model is not None
@@ -510,6 +512,16 @@ async def get_active_model():
     }
 
 
+@app.get("/api/v1/policy", tags=["Configuration"])
+async def get_decision_policy():
+    """Expose the non-secret decision thresholds currently used by this API process."""
+    return {
+        "approve_threshold": decision_engine.approve_threshold,
+        "block_threshold": decision_engine.block_threshold,
+        "adaptive_enabled": decision_engine.enable_adaptive,
+    }
+
+
 @app.post("/api/v1/models/activate", tags=["Models"])
 async def activate_model(payload: ActivateModelRequest):
     """Hot-swap active model in memory."""
@@ -591,10 +603,12 @@ async def get_drift_report(db: AsyncSession = Depends(get_db_session)):
     recent_amounts = [float(row[0]) for row in res.all()]
 
     if not recent_amounts:
-        # Use synthetic test sample to demonstrate drift calculation if DB is fresh
-        rng = __import__("numpy").random.default_rng(42)
-        ref_mean = reference_data.get("numerical_means", {}).get("amount", 100.0)
-        recent_amounts = list(rng.normal(ref_mean * 1.05, 30.0, size=200))
+        return {
+            "overall_status": "NO_RECENT_DATA",
+            "evaluated_features_count": 0,
+            "message": "No persisted transactions are available for drift analysis.",
+            "features": [],
+        }
 
     current_samples = {"amount": recent_amounts}
     drift_report = evaluate_feature_drift(reference_data, current_samples)

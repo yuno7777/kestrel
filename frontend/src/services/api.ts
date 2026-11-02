@@ -1,10 +1,28 @@
-import { Transaction, SystemSummary, ModelInfo, DriftReport } from '../types';
+import { Transaction, SystemSummary, ModelInfo, DriftReport, DecisionPolicy, ServiceHealth } from '../types';
 
 const API_BASE = '/api/v1';
 
 export async function fetchSummary(): Promise<SystemSummary> {
   const res = await fetch(`${API_BASE}/monitoring/summary`);
   if (!res.ok) throw new Error('Failed to fetch platform summary');
+  return res.json();
+}
+
+export async function fetchDecisionPolicy(): Promise<DecisionPolicy> {
+  const res = await fetch(`${API_BASE}/policy`);
+  if (!res.ok) throw new Error('Failed to fetch active decision policy');
+  return res.json();
+}
+
+export async function fetchApiHealth(): Promise<ServiceHealth> {
+  const res = await fetch(`${API_BASE}/system/health`);
+  if (!res.ok) throw new Error('API health check failed');
+  return res.json();
+}
+
+export async function fetchApiReadiness(): Promise<ServiceHealth> {
+  const res = await fetch(`${API_BASE}/system/ready`);
+  if (!res.ok) throw new Error('API readiness check failed');
   return res.json();
 }
 
@@ -32,7 +50,7 @@ export async function fetchTransactionDetail(id: string): Promise<Transaction> {
   return res.json();
 }
 
-export async function fetchFraudAlerts(): Promise<any[]> {
+export async function fetchFraudAlerts(): Promise<Transaction[]> {
   const res = await fetch(`${API_BASE}/fraud/alerts`);
   if (!res.ok) throw new Error('Failed to fetch fraud alerts');
   return res.json();
@@ -49,7 +67,7 @@ export async function submitFeedback(
     body: JSON.stringify({
       actual_label: actualLabel,
       reported_by: 'fraud_analyst_ui',
-      notes: notes || 'Reviewed via Kestrel Console',
+      notes: notes || undefined,
     }),
   });
   if (!res.ok) throw new Error('Failed to submit feedback');
