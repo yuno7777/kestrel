@@ -135,7 +135,7 @@ A rigorous hardware, runtime, and infrastructure audit was performed on the host
 
 | Date | Category | Note / Problem | Resolution / Decision |
 | :--- | :--- | :--- | :--- |
-| 2026-11-02 | Naming | User instructed not to keep generic names like Sentinel. | Selected **Kestrel** (representing sleek, high-precision, low-latency vigilance). |
+| 2026-11-02 | Naming | User requested a distinctive, non-generic project identity. | Selected and applied **Kestrel** for the platform and operations console. |
 | 2026-11-02 | Infrastructure | Docker Desktop daemon is not currently active on host. | Designed dual-mode execution: full Docker Compose plus standalone local Python/Node runner with SQLite fallback. |
 | 2026-11-02 | ML Strategy | Extreme class imbalance in transaction fraud. | Employ class-weight balancing, threshold calibration for target recall, and evaluate PR-AUC alongside ROC-AUC. |
 | 2026-11-02 | Latency | Network hop overhead between stream processor and inference service. | Implement both HTTP microservice inference and an embedded high-performance inference engine adapter. |
